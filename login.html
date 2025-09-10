@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMandi - Your Farming Partner</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2ECC71;
+            --primary-hover: #27ae60;
+            --secondary-color: #ecf0f1;
+            --text-color: #34495e;
+            --light-text: #7f8c8d;
+            --bg-color: #ffffff;
+            --alt-bg-color: #f8f9fa;
+            --border-color: #e0e0e0;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.07);
+            --font-family: 'Inter', sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-family);
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header */
+        .app-header {
+            background: transparent;
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+        }
+        .app-header.scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 1rem 0;
+        }
+        .app-header.scrolled .logo h1, .app-header.scrolled .main-nav a { color: var(--text-color); }
+        .app-header .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo h1 { font-size: 1.5rem; font-weight: 700; color: white; transition: color 0.3s ease; }
+        .logo svg path { fill: white; transition: fill 0.3s ease; }
+        .app-header.scrolled .logo svg path { fill: var(--primary-color); }
+        .header-right { display: flex; align-items: center; gap: 2rem; }
+        .main-nav { display: flex; gap: 1.5rem; }
+        .main-nav a { text-decoration: none; color: white; font-weight: 500; transition: color 0.2s ease-in-out; cursor: pointer; }
+        .main-nav a:hover { color: var(--primary-color); }
+        .auth-buttons { display: flex; gap: 0.5rem; }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 180px 0 120px 0;
+            color: white;
+            background-image: linear-gradient(135deg, #2c5364 0%, #203a43 50%, #0f2027 100%);
+            text-align: center;
+        }
+        .hero-content h2 { font-size: 3.2rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.2; }
+        .hero-content p { font-size: 1.2rem; color: rgba(255, 255, 255, 0.8); max-width: 650px; margin: 0 auto 2rem auto; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; }
+        
+        /* Buttons */
+        .btn { padding: 12px 22px; border: 1px solid transparent; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease-in-out; text-decoration: none; display: inline-block; text-align: center; }
+        .btn:hover { transform: translateY(-3px); }
+        .btn-primary { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .btn-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
+        .btn-secondary { background-color: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); }
+        .hero-section .btn-secondary:hover { background-color: rgba(255,255,255,0.2); }
+        .btn-tertiary { background-color: transparent; color: white; border: 1px solid white; }
+        .app-header.scrolled .btn-tertiary { color: var(--text-color); border-color: var(--border-color); }
+        .btn-full { width: 100%; }
+
+        /* Features Section */
+        .app-section { padding: 80px 0; background-color: var(--alt-bg-color); }
+        .section-header { text-align: center; margin-bottom: 50px; }
+        .section-header h3 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-header p { color: var(--light-text); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+        .card { background: var(--bg-color); border-radius: 12px; padding: 24px; box-shadow: var(--card-shadow); display: flex; flex-direction: column; height: 100%; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .feature-card { align-items: center; text-align: center; }
+        .feature-card .icon { background-color: #e8f5e9; color: var(--primary-color); border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
+        .feature-card .icon svg { stroke: var(--primary-color); width: 32px; height: 32px; stroke-width: 1.5; }
+        .feature-card h4 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .feature-card p { font-size: 0.95rem; color: var(--light-text); margin-bottom: 1.5rem; flex-grow: 1; }
+        .feature-card .btn { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); }
+        .feature-card .btn:hover { background-color: var(--secondary-color); }
+
+        /* Auth Pages Styling */
+        .auth-page-view { padding: 120px 0 80px 0; min-height: 100vh; background-color: var(--alt-bg-color); }
+        .auth-card { max-width: 420px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: var(--card-shadow); }
+        .auth-card .logo { justify-content: center; margin-bottom: 1rem; }
+        .auth-card .logo h1 { color: var(--text-color); }
+        .auth-card .logo svg path { fill: var(--primary-color); }
+        .auth-subtitle { text-align: center; color: var(--light-text); margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; }
+        .separator { text-align: center; margin: 1.5rem 0; color: var(--light-text); display: flex; align-items: center; gap: 1rem; }
+        .separator::before, .separator::after { content: ''; height: 1px; background-color: var(--border-color); flex-grow: 1; }
+        .social-login { display: flex; flex-direction: column; gap: 0.75rem; }
+        .btn-social { width: 100%; text-align: center; border: 1px solid var(--border-color); background: none; color: var(--text-color); }
+        .auth-switch { text-align: center; margin-top: 1.5rem; }
+        .auth-switch a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+
+        /* Profile Page */
+        .profile-main { padding: 120px 0 80px 0; background-color: var(--alt-bg-color); }
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+        /* View Management */
+        .view-hidden { display: none !important; }
+
+        /* Chatbot */
+        #chatbot-launcher { position: fixed; bottom: 30px; right: 30px; z-index: 1001; background-color: var(--primary-color); color: white; border-radius: 50px; padding: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+        #chatbot-launcher:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+        #chatbot-launcher .chatbot-icon { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; }
+        #chatbot-launcher img { width: 100%; height: auto; }
+        #chatbot-launcher span { font-weight: 600; padding-right: 15px; }
+        #chatbot-window { position: fixed; bottom: 30px; right: 30px; width: 350px; max-height: 500px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; z-index: 1002; transform: translateY(20px) scale(0.9); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        #chatbot-window.active { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+        .chatbot-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--primary-color); color: white; border-top-left-radius: 15px; border-top-right-radius: 15px; }
+        .chatbot-header h4 { margin: 0; }
+        #close-chatbot { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        .chatbot-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
+        .message { margin-bottom: 10px; max-width: 80%; }
+        .message p { padding: 10px 15px; border-radius: 18px; line-height: 1.4; }
+        .message.received { align-self: flex-start; }
+        .message.received p { background: #f1f0f0; color: #333; }
+        .message.sent { align-self: flex-end; }
+        .message.sent p { background: var(--primary-color); color: white; }
+        .chatbot-input { display: flex; padding: 15px; border-top: 1px solid var(--border-color); }
+        #user-input { flex-grow: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 15px; outline: none; transition: border-color 0.2s; }
+        #user-input:focus { border-color: var(--primary-color); }
+        #send-btn { background: var(--primary-color); border: none; color: white; padding: 10px 15px; border-radius: 20px; margin-left: 10px; cursor: pointer; transition: background-color 0.2s; }
+        #send-btn:disabled { background: #9E9E9E; cursor: not-allowed; }
+        .message.loading .typing-indicator { display: flex; align-items: center; padding: 10px 15px; }
+        .typing-indicator span { height: 8px; width: 8px; background-color: #9E9E9E; border-radius: 50%; display: inline-block; margin: 0 2px; animation: bounce 1.4s infinite both; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+        /* Contact Section */
+        .contact-section { background-color: #1a1a1a; color: #ccc; padding: 80px 0 0 0; }
+        .contact-section .section-header h3 { color: white; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .contact-details h4 { font-size: 1.5rem; color: white; margin-bottom: 1rem; }
+        .contact-details p { margin-bottom: 1rem; font-size: 1.1rem; }
+        .contact-socials { margin-top: 2rem; }
+        .contact-socials a { color: #ccc; text-decoration: none; margin-right: 15px; font-weight: 500; }
+        .contact-socials a:hover { color: var(--primary-color); }
+        .contact-form .form-group { margin-bottom: 1rem; }
+        .contact-form input, .contact-form textarea { width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #444; background: #2b2b2b; color: white; font-size: 1rem; transition: border-color 0.2s, box-shadow 0.2s; }
+        .contact-form input:focus, .contact-form textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2); }
+        .contact-form button { width: 100%; }
+        .footer-bottom { background: #111; margin-top: 80px; padding: 20px 0; text-align: center; color: var(--light-text); }
+
+        /* Back to Top Button */
+        #back-to-top { position: fixed; bottom: 30px; left: 30px; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 1000; }
+        #back-to-top.visible { opacity: 1; visibility: visible; }
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        
+        @media (max-width: 900px) {
+            .contact-grid, .profile-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .header-right { gap: 1rem; }
+            .main-nav { display: none; }
+            .hero-content h2 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="container">
+            <a href="#" class="logo" data-view="home-view">
+                <svg width="32" height="32" viewBox="0 0 24 24"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48C4.7 9.1 5.97 7.74 7.56 6.9c1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85s1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51-2.76 4.48-4.79.31-.65.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54s-1.11.82-.9 1.48c-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25-.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85s-1.25 1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                <h1>KrishiMandi</h1>
+            </a>
+            <div class="header-right" id="header-right">
+                <!-- Dynamically populated by JS -->
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home View -->
+        <div id="home-view">
+            <section class="hero-section">
+                <div class="container hero-content reveal">
+                    <h2>Empowering Indian Agriculture</h2>
+                    <p>Real-time mandi prices, a direct-to-farmer marketplace, AI-powered disease detection, and a one-stop shop for all your farming needs.</p>
+                </div>
+            </section>
+            <section class="app-section">
+                <div class="container">
+                    <div class="section-header reveal">
+                        <h3>One Platform, Endless Possibilities</h3>
+                        <p>Everything you need to manage and grow your farm, right at your fingertips.</p>
+                    </div>
+                    <div class="card-grid">
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span><h4>Live Mandi Prices</h4><p>Get real-time price updates from markets across India.</p><a href="#" class="btn btn-secondary btn-full">View Prices</a></div>
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></span><h4>Marketplace</h4><p>A central hub to connect with buyers and sellers for all your needs.</p><a href="#" class="btn btn-secondary btn-full">Explore</a></div>
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></span><h4>Buy Crops</h4><p>Find high-quality crops directly from verified sellers near you.</p><a href="#" class="btn btn-secondary btn-full">Start Buying</a></div>
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></span><h4>Sell Produce</h4><p>List your harvest and connect with buyers to get the best price.</p><a href="#" class="btn btn-secondary btn-full">Start Selling</a></div>
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg></span><h4>AI Diagnosis</h4><p>Upload a photo to instantly identify crop diseases and get advice.</p><a href="#" class="btn btn-secondary btn-full">Diagnose Crop</a></div>
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></span><h4>Agri-Shop</h4><p>Your one-stop shop for seeds, fertilizers, and equipment.</p><a href="#" class="btn btn-secondary btn-full">Go to Shop</a></div>
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span><h4>Insurance</h4><p>Protect your harvest and future with easy-to-understand plans.</p><a href="#" class="btn btn-secondary btn-full">Get Insured</a></div>
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg></span><h4>Farm Tasks</h4><p>Organize daily activities and set reminders with a simple to-do list.</p><a href="#" class="btn btn-secondary btn-full">Manage Tasks</a></div>
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span><h4>Farming Tools</h4><p>Access calculators, weather guides, and smart tools to optimize farming.</p><a href="#" class="btn btn-secondary btn-full">Use Tools</a></div>
+                        <div class="card feature-card reveal"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg></span><h4>Farmer Reels</h4><p>Watch and share short videos to learn new techniques and connect.</p><a href="#" class="btn btn-secondary btn-full">Watch Reels</a></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Login View -->
+        <section id="login-view" class="auth-page-view view-hidden">
+            <div class="auth-card">
+                <a href="#" class="logo" data-view="home-view">
+                    <svg width="32" height="32" viewBox="0 0 24 24"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48C4.7 9.1 5.97 7.74 7.56 6.9c1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85s1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51-2.76 4.48-4.79.31-.65.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54s-1.11.82-.9 1.48c-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25-.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85s-1.25 1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                    <h1>Welcome Back</h1>
+                </a>
+                <p class="auth-subtitle">Login to continue to KrishiMandi.</p>
+                <form id="login-form">
+                    <div class="form-group"><label for="login-email">Email Address</label><input type="email" id="login-email" placeholder="you@example.com" required></div>
+                    <div class="form-group"><label for="login-password">Password</label><input type="password" id="login-password" placeholder="Enter your password" required></div>
+                    <button type="submit" class="btn btn-primary btn-full">Login</button>
+                </form>
+                <div class="separator"><span>OR</span></div>
+                <div class="social-login"><button class="btn btn-social btn-google">Continue with Google</button><button class="btn btn-social btn-facebook">Continue with Facebook</button></div>
+                <p class="auth-switch">Don't have an account? <a href="#" data-view="signup-view">Sign Up</a></p>
+            </div>
+        </section>
+
+        <!-- Signup View -->
+        <section id="signup-view" class="auth-page-view view-hidden">
+            <div class="auth-card">
+                <a href="#" class="logo" data-view="home-view">
+                    <svg width="32" height="32" viewBox="0 0 24 24"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48C4.7 9.1 5.97 7.74 7.56 6.9c1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85s1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51-2.76 4.48-4.79.31-.65.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54s-1.11.82-.9 1.48c-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25-.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85s-1.25 1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                    <h1>Create Your Account</h1>
+                </a>
+                <p class="auth-subtitle">Join a community of modern farmers.</p>
+                <form id="signup-form">
+                    <div class="form-group"><label for="signup-name">Full Name</label><input type="text" id="signup-name" placeholder="Enter your full name" required></div>
+                    <div class="form-group"><label for="signup-email">Email Address</label><input type="email" id="signup-email" placeholder="you@example.com" required></div>
+                    <div class="form-group"><label for="signup-password">Password</label><input type="password" id="signup-password" placeholder="Create a strong password" required></div>
+                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+                </form>
+                <div class="separator"><span>OR</span></div>
+                <div class="social-login"><button class="btn btn-social btn-google">Sign Up with Google</button><button class="btn btn-social btn-facebook">Sign Up with Facebook</button></div>
+                <p class="auth-switch">Already have an account? <a href="#" data-view="login-view">Login</a></p>
+            </div>
+        </section>
+
+        <!-- Profile View -->
+        <section id="profile-view" class="profile-main view-hidden">
+             <div class="container">
+                <div class="section-header">
+                    <h3>My Profile</h3>
+                    <p>Manage your account settings and personal information.</p>
+                </div>
+                <div class="profile-grid">
+                    <div class="card">
+                        <h4>Profile Information</h4>
+                        <form id="profile-info-form">
+                            <div class="form-group"><label for="profile-name">Full Name</label><input type="text" id="profile-name" required></div>
+                            <div class="form-group"><label for="profile-email">Email Address</label><input type="email" id="profile-email" disabled></div>
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h4>Change Password</h4>
+                        <form id="change-password-form">
+                            <div class="form-group"><label for="current-password">Current Password</label><input type="password" id="current-password" required></div>
+                            <div class="form-group"><label for="new-password">New Password</label><input type="password" id="new-password" required></div>
+                            <button type="submit" class="btn btn-primary">Change Password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Chatbot -->
+    <div id="chatbot-launcher">
+        <div class="chatbot-icon"><img src="https://i.imgur.com/T4j4Wz2.png" alt="Chatbot Assistant"></div>
+        <span>Chat with Me!</span>
+    </div>
+    <div id="chatbot-window">
+        <div class="chatbot-header"><h4>KrishiMandi Assistant</h4><button id="close-chatbot">&times;</button></div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <div class="message received"><p>Hello! How can I help you today?</p></div>
+        </div>
+        <div class="chatbot-input"><input type="text" id="user-input" placeholder="Ask a question..."><button id="send-btn">Send</button></div>
+    </div>
+
+    <footer class="contact-section">
+        <div class="container">
+             <div class="section-header"><h3>Contact Us</h3><p>Have questions or need support? Get in touch with our team.</p></div>
+            <div class="contact-grid">
+                <div class="contact-details">
+                     <h4>KrishiMandi Head Office</h4>
+                    <p>#123, AgriTech Park, Electronic City<br>Bengaluru, Karnataka - 560100</p>
+                    <p><strong>Phone:</strong> +91-9876543210</p>
+                    <p><strong>Email:</strong> support@krishimandi.fake</p>
+                     <div class="contact-socials"><a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">Instagram</a></div>
+                </div>
+                <form class="contact-form">
+                    <div class="form-group"><input type="text" placeholder="Your Name" required></div>
+                     <div class="form-group"><input type="email" placeholder="Your Email" required></div>
+                     <div class="form-group"><textarea rows="5" placeholder="Your Message" required></textarea></div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 KrishiMandi. All rights reserved.</p></div>
+    </footer>
+    
+    <a href="#" id="back-to-top" class="btn" title="Back to Top">&uarr;</a>
+    <div id="toast-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.querySelector('.app-header');
+            const backToTopBtn = document.getElementById('back-to-top');
+            const allViews = document.querySelectorAll('main > *');
+
+            function navigateTo(viewId) {
+                allViews.forEach(view => {
+                    if (view.id === viewId) {
+                        view.classList.remove('view-hidden');
+                    } else {
+                        view.classList.add('view-hidden');
+                    }
+                });
+                window.scrollTo(0, 0);
+            }
+
+            document.body.addEventListener('click', (e) => {
+                const target = e.target.closest('[data-view]');
+                if (target) {
+                    e.preventDefault();
+                    const viewId = target.getAttribute('data-view');
+                    navigateTo(viewId);
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                const scrolled = window.scrollY > 50;
+                header.classList.toggle('scrolled', scrolled);
+                backToTopBtn.classList.toggle('visible', scrolled);
+            });
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            // --- Reusable Toast Notification ---
+            function showToast(message, type = 'success') {
+                let toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.id = 'toast-container';
+                    document.body.appendChild(toastContainer);
+                }
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 4000);
+            }
+
+            function renderHeader() {
+                const user = JSON.parse(localStorage.getItem('krishiMandiUser'));
+                const headerRight = document.getElementById('header-right');
+                const navLinks = `<nav class="main-nav"><a href="#">Prices</a><a href="#">Buy</a><a href="#">Sell</a><a href="#">Diagnose</a><a href="#">Reels</a></nav>`;
+                
+                if (user) {
+                    headerRight.innerHTML = navLinks + `<div class="auth-buttons"><a href="#" data-view="profile-view" class="btn btn-tertiary">Profile</a><a href="#" id="logout-btn" class="btn btn-primary">Logout</a></div>`;
+                    document.getElementById('logout-btn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem('krishiMandiUser');
+                        showToast('You have been logged out.');
+                        renderHeader();
+                        navigateTo('home-view');
+                    });
+                } else {
+                    headerRight.innerHTML = navLinks + `<div class="auth-buttons"><a href="#" data-view="login-view" class="btn btn-tertiary">Login</a><a href="#" data-view="signup-view" class="btn btn-primary">Sign Up</a></div>`;
+                }
+            }
+            
+            // Forms Logic
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const user = { name: "Demo Farmer", email: email };
+                localStorage.setItem('krishiMandiUser', JSON.stringify(user));
+                showToast('Login successful! Redirecting...');
+                setTimeout(() => {
+                    renderHeader();
+                    navigateTo('profile-view');
+                    populateProfileForm();
+                }, 1500);
+            });
+
+            document.getElementById('signup-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const user = { name: name, email: email };
+                localStorage.setItem('krishiMandiUser', JSON.stringify(user));
+                showToast('Account created! Redirecting...');
+                setTimeout(() => {
+                    renderHeader();
+                    navigateTo('profile-view');
+                    populateProfileForm();
+                }, 1500);
+            });
+            
+            function populateProfileForm() {
+                const user = JSON.parse(localStorage.getItem('krishiMandiUser'));
+                if (user) {
+                    document.getElementById('profile-name').value = user.name;
+                    document.getElementById('profile-email').value = user.email;
+                }
+            }
+            
+            document.getElementById('profile-info-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newName = document.getElementById('profile-name').value;
+                const user = JSON.parse(localStorage.getItem('krishiMandiUser'));
+                user.name = newName;
+                localStorage.setItem('krishiMandiUser', JSON.stringify(user));
+                showToast('Profile updated successfully!');
+            });
+            
+            document.getElementById('change-password-form').addEventListener('submit', e => {
+                e.preventDefault();
+                showToast('Password changed successfully!', 'success');
+                e.target.reset();
+            });
+
+            // Advanced Chatbot Logic
+            const chatbotLauncher = document.getElementById('chatbot-launcher');
+            const chatbotWindow = document.getElementById('chatbot-window');
+            const closeChatbotBtn = document.getElementById('close-chatbot');
+            const sendBtn = document.getElementById('send-btn');
+            const userInput = document.getElementById('user-input');
+            const messagesContainer = document.getElementById('chatbot-messages');
+
+            chatbotLauncher.addEventListener('click', () => { chatbotWindow.classList.add('active'); chatbotLauncher.style.display = 'none'; });
+            closeChatbotBtn.addEventListener('click', () => { chatbotWindow.classList.remove('active'); chatbotLauncher.style.display = 'flex'; });
+            
+            function addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                if (sender === 'loading') {
+                    messageDiv.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+                } else {
+                    const p = document.createElement('p');
+                    p.textContent = text;
+                    messageDiv.appendChild(p);
+                }
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                return messageDiv;
+            }
+
+            async function getGeminiResponse(text) {
+                // Placeholder for your actual Gemini API call
+                return new Promise(resolve => setTimeout(() => resolve("Thanks for asking! This is a demo. The real AI response from Gemini would appear here."), 1500));
+            }
+
+            async function handleSend() {
+                const text = userInput.value.trim();
+                if (!text) return;
+                
+                addMessage(text, 'sent');
+                userInput.value = '';
+                userInput.disabled = true;
+                sendBtn.setAttribute('disabled', 'true');
+                
+                const loadingIndicator = addMessage('', 'loading');
+                const responseText = await getGeminiResponse(text);
+                
+                if (loadingIndicator) loadingIndicator.remove();
+                addMessage(responseText, 'received');
+
+                userInput.disabled = false;
+                userInput.focus();
+                sendBtn.removeAttribute('disabled');
+            }
+
+            sendBtn.addEventListener('click', handleSend);
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); handleSend(); }
+            });
+            
+            document.querySelector('.contact-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                showToast('Thank you! Your message has been sent.');
+                e.target.reset();
+            });
+
+            // Initial render
+            renderHeader();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMandi - Agricultural Library</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Library-Specific Styles */
+        body.modal-open { overflow: hidden; }
+        .pdf-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .pdf-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pdf-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 90%;
+            height: 90%;
+            max-width: 1000px;
+            background-color: #444;
+            transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 2001;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .pdf-modal.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pdf-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #222;
+            padding: 10px 20px;
+            color: white;
+        }
+        .pdf-modal-title {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pdf-modal-controls {
+            display: flex;
+            gap: 15px;
+        }
+        .pdf-modal-controls button, .pdf-modal-controls a {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+        .pdf-modal-controls button:hover, .pdf-modal-controls a:hover {
+            color: var(--primary-color);
+        }
+        .pdf-viewer {
+            flex-grow: 1;
+            border: none;
+        }
+
+        /* Book Card Styles */
+        .book-card {
+            text-align: center;
+        }
+        .book-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .book-card h5 {
+            font-size: 1.1rem;
+            flex-grow: 1;
+        }
+        .book-card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        .book-card-actions .btn {
+            flex: 1;
+        }
+        .quantity-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        .qty-input {
+            width: 70px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header scrolled">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48C4.7 9.1 5.97 7.74 7.56 6.9c1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85s1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51-2.76 4.48-4.79.31-.65.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54s-1.11.82-.9 1.48c-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25-.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85s-1.25 1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                <h1>KrishiMandi</h1>
+            </a>
+             <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="prices.html">Prices</a>
+                <a href="buy.html">Buy</a>
+                <a href="sell.html">Sell</a>
+                <a href="diagnose.html">Diagnose</a>
+                <a href="shop.html">Shop</a>
+                <a href="insurance.html">Insurance</a>
+                <a href="tasks.html">Tasks</a>
+                <a href="library.html" class="active">Library</a>
+                <a href="reels.html">Reels</a>
+            </nav>
+            <a href="cart.html" class="btn btn-primary" id="cart-button">Cart (0)</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="library" class="app-section">
+            <div class="container">
+                <div class="section-header">
+                    <h3>Agricultural Library</h3>
+                    <p>Access a collection of valuable books and resources to enhance your farming knowledge.</p>
+                </div>
+                <div id="book-grid" class="card-grid">
+                    <!-- Book cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div id="toast-container"></div>
+
+    <!-- PDF Viewer Modal -->
+    <div id="pdf-modal-overlay" class="pdf-modal-overlay"></div>
+    <div id="pdf-modal" class="pdf-modal">
+        <div class="pdf-modal-header">
+            <span id="pdf-modal-title" class="pdf-modal-title"></span>
+            <div class="pdf-modal-controls">
+                <a id="pdf-download-btn" href="#" download>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </a>
+                <button id="pdf-fullscreen-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                </button>
+                <button id="pdf-close-btn">&times;</button>
+            </div>
+        </div>
+        <iframe id="pdf-viewer" class="pdf-viewer"></iframe>
+    </div>
+
+    <footer class="app-footer">
+        <div class="container">
+            <p>&copy; 2025 KrishiMandi. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        const bookData = [
+            { id: 'b1', title: "Principles of Agricultural Economics", price: 499, cover: "books/3D-book-4-1536x1152.webp", pdf: "books/Principles-of-Agricultural-Economics-2.pdf" },
+            { id: 'b2', title: "Agricultural Heritage", price: 350, cover: "books/3D-book-1-1536x1152.webp", pdf: "books/Agricultural-Heritage.pdf" },
+            { id: 'b3', title: "Principles of Agricultural Economics Vol. 1", price: 450, cover: "books/3D-book-5-1536x1152.webp", pdf: "books/Principles-of-Agricultural-Economics-1.pdf" },
+            { id: 'b4', title: "Fundamentals of Plant Biochemistry", price: 550, cover: "books/3D-book-1-2-1536x1152.webp", pdf: "books/FUNDAMENTAL-OF-PLANT-BIOCHEMISTRY-AND-BlOTECHNOLOGY.pdf" },
+            { id: 'b5', title: "Fundamentals of Horticulture", price: 400, cover: "books/Fundamentals-of-Horticulture.webp", pdf: "books/AgriMoon-AHT-111-Fundamentals-of-Horticulture.pdf" },
+            { id: 'b6', title: "Fundamentals of Agronomy", price: 425, cover: "books/3D-book-1-1536x1152.webp", pdf: "books/Fundamentals-of-Agronomy-AGRlMOON.pdf" },
+            { id: 'b7', title: "Agricultural Marketing, Trade and Prices", price: 520, cover: "books/3D-book-1-5-1536x1152.webp", pdf: "books/AGRICULTURAL-MARKETING-TRADE-AND-PRICES-1.pdf" },
+            { id: 'b8', title: "Fundamentals of Agricultural Extension", price: 375, cover: "books/3D-book-4-1536x1152.webp", pdf: "books/FUNDAMENTALS-OF-AGRICULTURAL-EXTENSION-EDUCATION.pdf" }
+        ];
+
+        const bookGrid = document.getElementById('book-grid');
+        const modal = document.getElementById('pdf-modal');
+        const overlay = document.getElementById('pdf-modal-overlay');
+        const pdfViewer = document.getElementById('pdf-viewer');
+        const closeBtn = document.getElementById('pdf-close-btn');
+        const fullscreenBtn = document.getElementById('pdf-fullscreen-btn');
+        const downloadBtn = document.getElementById('pdf-download-btn');
+        const modalTitle = document.getElementById('pdf-modal-title');
+        const cartButton = document.getElementById('cart-button');
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container') || (() => {
+                const c = document.createElement('div');
+                c.id = 'toast-container';
+                document.body.appendChild(c);
+                return c;
+            })();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function updateCartButton() {
+            const cart = JSON.parse(localStorage.getItem('krishiCart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            cartButton.textContent = `Cart (${totalItems})`;
+        }
+
+        function renderBooks() {
+            bookGrid.innerHTML = bookData.map((book, index) => `
+                <div class="card book-card">
+                    <img src="${book.cover}" alt="${book.title}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e0e0e0/7f8c8d?text=Image+Not+Found';">
+                    <h5>${book.title}</h5>
+                    <div class="quantity-group">
+                        <label for="qty-${book.id}">Qty:</label>
+                        <input type="number" id="qty-${book.id}" class="qty-input" value="1" min="1" max="10">
+                    </div>
+                    <div class="book-card-actions">
+                        <button class="btn btn-secondary read-btn" data-index="${index}">Read</button>
+                        <button class="btn btn-primary add-to-cart-btn" data-id="${book.id}">Add to Cart</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function addToCart(bookId) {
+            const qtyInput = document.getElementById(`qty-${bookId}`);
+            const quantity = parseInt(qtyInput.value, 10);
+            if (!quantity || quantity < 1) {
+                showToast("Please enter a valid quantity", "error");
+                return;
+            }
+
+            let cart = JSON.parse(localStorage.getItem('krishiCart')) || [];
+            const bookToAdd = bookData.find(b => b.id === bookId);
+            const existingItem = cart.find(item => item.id === bookId);
+
+            if (existingItem) {
+                existingItem.quantity += quantity;
+                 showToast(`${quantity} more "${bookToAdd.title}" added to cart!`);
+            } else {
+                 cart.push({
+                    id: bookToAdd.id,
+                    name: bookToAdd.title,
+                    price: bookToAdd.price,
+                    img: bookToAdd.cover,
+                    quantity: quantity,
+                    type: 'book'
+                });
+                showToast(`${bookToAdd.title} added to cart!`);
+            }
+            
+            localStorage.setItem('krishiCart', JSON.stringify(cart));
+            updateCartButton();
+        }
+
+        function openModal(book) {
+            pdfViewer.src = book.pdf;
+            modalTitle.textContent = book.title;
+            downloadBtn.href = book.pdf;
+            downloadBtn.download = book.title.replace(/ /g, '_') + '.pdf';
+            modal.classList.add('active');
+            overlay.classList.add('active');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.classList.remove('modal-open');
+            pdfViewer.src = "";
+        }
+
+        bookGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('read-btn')) {
+                const bookIndex = e.target.dataset.index;
+                openModal(bookData[bookIndex]);
+            } else if (e.target.classList.contains('add-to-cart-btn')) {
+                const bookId = e.target.dataset.id;
+                addToCart(bookId);
+            }
+        });
+        
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', closeModal);
+
+        fullscreenBtn.addEventListener('click', () => {
+            if (modal.requestFullscreen) modal.requestFullscreen();
+            else if (modal.webkitRequestFullscreen) modal.webkitRequestFullscreen();
+            else if (modal.msRequestFullscreen) modal.msRequestFullscreen();
+        });
+
+        // Initial render
+        renderBooks();
+        updateCartButton();
+    </script>
+</body>
+</html>
+

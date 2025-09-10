@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMandi - Buy Crops</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+
+    <style>
+        /* CSS Variables & Base Styles */
+        :root {
+            --primary-color: #2ECC71;
+            --primary-hover: #27ae60;
+            --secondary-color: #ecf0f1;
+            --text-color: #34495e;
+            --light-text: #7f8c8d;
+            --bg-color: #ffffff;
+            --alt-bg-color: #f8f9fa;
+            --border-color: #e0e0e0;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.07);
+            --positive-color: #27ae60;
+            --negative-color: #e74c3c;
+            --font-family: 'Inter', sans-serif;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--bg-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .app-header.scrolled {
+             box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+        }
+
+        .app-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .main-nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.2s ease-in-out;
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        .main-nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .main-nav a:hover, .main-nav a.active { color: var(--primary-color); }
+        .main-nav a:hover::after, .main-nav a.active::after { width: 100%; }
+        
+        /* General Section Styling */
+        .app-section { padding: 80px 0; }
+        .section-header { text-align: center; margin-bottom: 50px; }
+        .section-header h3 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-header p { color: var(--light-text); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+        
+        /* Card */
+        .card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        /* Forms */
+        .form-card { max-width: 700px; margin: 0 auto; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: var(--font-family);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 14px 32px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .btn-primary { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .btn-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
+
+        /* Task List */
+        .task-form { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        .task-form input { flex-grow: 1; }
+        .task-list { list-style: none; }
+        .task-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color 0.2s; }
+        .task-list li:hover { background-color: #f8f9fa; }
+        .task-list li.completed span { text-decoration: line-through; color: var(--light-text); }
+        .delete-btn { background: none; border: none; color: var(--negative-color); font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 0 5px; opacity: 0.5; transition: opacity 0.2s; }
+        .task-list li:hover .delete-btn { opacity: 1; }
+
+        /* Toast Notifications */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 15px 20px; border-radius: 8px; color: white; font-weight: 500; box-shadow: 0 4px 10px rgba(0,0,0,0.1); opacity: 0; transform: translateX(100%); animation: slideIn 0.5s forwards, slideOut 0.5s 4.5s forwards; }
+        .toast.success { background-color: var(--primary-color); }
+        .toast.error { background-color: var(--negative-color); }
+        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+
+        /* Footer */
+        .app-footer { background: var(--alt-bg-color); padding: 40px 0; text-align: center; color: var(--light-text); border-top: 1px solid var(--border-color); margin-top: 60px; }
+
+        /* Animations on Scroll */
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48.79-1.67 2.06-3.03 3.65-3.87 1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85.78-.28 1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51 2.76 4.48-4.79.31-.65-.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54-.66-.21-1.11.82-.9 1.48-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85-.78.28-1.25-1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                <h1>KrishiMandi</h1>
+            </a>
+             <nav class="main-nav">
+                <a href="prices.html">Prices</a>
+                <a href="buy.html">Buy</a>
+                <a href="sell.html">Sell</a>
+                <a href="diagnose.html">Diagnose</a>
+                <a href="shop.html">Shop</a>
+                <a href="insurance.html">Insurance</a>
+                <a href="tasks.html" class="active">Tasks</a>
+                <a href="reels.html">Reels</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- My Farm Tasks -->
+        <section id="farm-tasks" class="app-section">
+            <div class="container reveal">
+                <div class="section-header">
+                    <h3>My Farm Tasks</h3>
+                    <p>Manage your daily to-do list and stay organized.</p>
+                </div>
+                <div class="card form-card">
+                    <form id="task-form" class="task-form">
+                         <input type="text" id="task-input" placeholder="e.g., Apply fertilizer to wheat crop" required>
+                         <button type="submit" class="btn btn-primary">Add Task</button>
+                    </form>
+                    <ul id="task-list" class="task-list">
+                        <!-- Default tasks -->
+                        <li><span>Water the mustard fields</span> <button class="delete-btn">×</button></li>
+                        <li class="completed"><span>Buy new plow blades from Agri-Shop</span> <button class="delete-btn">×</button></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div id="toast-container"></div>
+    <footer class="app-footer">
+        <div class="container">
+            <p>&copy; 2025 KrishiMandi. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Toast Notification Function ---
+            function showToast(message, type = 'success') {
+                // Ensure toast container exists
+                let toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.id = 'toast-container';
+                    document.body.appendChild(toastContainer);
+                }
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                // Remove toast after 5 seconds
+                setTimeout(() => { toast.remove(); }, 5000);
+            }
+
+            // --- Header Scroll Effect ---
+            const header = document.querySelector('.app-header');
+            window.addEventListener('scroll', () => {
+                header.classList.toggle('scrolled', window.scrollY > 50);
+            });
+
+            // --- Scroll Animations ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            // --- Task List Functionality ---
+            const taskForm = document.getElementById('task-form');
+            const taskInput = document.getElementById('task-input');
+            const taskList = document.getElementById('task-list');
+
+            function setupTaskItem(li) {
+                // Toggle completion on click
+                const taskSpan = li.querySelector('span');
+                if(taskSpan){
+                    taskSpan.addEventListener('click', () => {
+                        li.classList.toggle('completed');
+                    });
+                }
+                
+                // Handle delete button
+                const deleteBtn = li.querySelector('.delete-btn');
+                if(deleteBtn){
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent li click event
+                        li.remove();
+                        showToast('Task removed.');
+                    });
+                }
+            }
+
+            // Handle form submission to add new tasks
+            taskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const taskText = taskInput.value.trim();
+                if (taskText) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${taskText}</span> <button class="delete-btn">×</button>`;
+                    setupTaskItem(li);
+                    taskList.appendChild(li);
+                    taskInput.value = '';
+                    showToast('Task added!', 'success');
+                } else {
+                    showToast('Task cannot be empty.', 'error');
+                }
+            });
+
+            // Set up event listeners for the pre-existing tasks
+            document.querySelectorAll('#task-list li').forEach(setupTaskItem);
+        });
+    </script>
+</body>
+</html>
+

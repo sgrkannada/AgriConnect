@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMandi - Sell Crops</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .mandi-price { background-color: #e8f5e9; color: #1b5e20; padding: 0.75rem; border-radius: 8px; margin-top: -0.5rem; margin-bottom: 1rem; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48.79-1.67 2.06-3.03 3.65-3.87 1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85.78-.28 1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51 2.76 4.48-4.79.31-.65.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54-.66-.21-1.11.82-.9 1.48-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85-.78.28-1.25-1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                <h1>KrishiMandi</h1>
+            </a>
+             <nav class="main-nav">
+                <a href="prices.html">Prices</a>
+                <a href="buy.html">Buy</a>
+                <a href="sell.html" class="active">Sell</a>
+                <a href="diagnose.html">Diagnose</a>
+                <a href="shop.html">Shop</a>
+                <a href="insurance.html">Insurance</a>
+                <a href="tasks.html">Tasks</a>
+                <a href="reels.html">Reels</a>
+                 <a href="cart.html" style="margin-left: 1rem; font-weight: 600;">Cart</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="sell-crops" class="app-section">
+            <div class="container reveal">
+                <div class="section-header">
+                    <h3>Sell Your Crops Directly</h3>
+                    <p>List your produce in minutes and connect with thousands of verified buyers across India.</p>
+                </div>
+                <div class="card form-card">
+                    <form id="sell-form" class="sell-form">
+                        <div class="form-group">
+                            <label for="crop-type">Crop Type *</label>
+                            <select id="crop-type" required>
+                                <option value="">Select Crop</option>
+                                <option value="Wheat">Wheat</option>
+                                <option value="Rice">Rice</option>
+                                <option value="Cotton">Cotton</option>
+                                <option value="Mustard">Mustard</option>
+                                <option value="Sugarcane">Sugarcane</option>
+                            </select>
+                        </div>
+                        <div id="mandi-price-ref" class="mandi-price" style="display: none;">
+                            <p>Today's avg. Mandi price: <strong id="live-price"></strong></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantity">Quantity (Quintals) *</label>
+                            <input type="number" id="quantity" placeholder="e.g., 50" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Expected Price (₹/Quintal) *</label>
+                            <input type="number" id="price" placeholder="e.g., 2500" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location *</label>
+                            <input type="text" id="location" placeholder="e.g., Ludhiana, Punjab" required>
+                        </div>
+                        <div class="form-group">
+                             <label for="crop-image">Upload Picture</label>
+                             <input type="file" id="crop-image" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">List Crop for Sale</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div id="toast-container"></div>
+    <footer class="app-footer">
+        <div class="container"><p>&copy; 2025 KrishiMandi. All rights reserved.</p></div>
+    </footer>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3000);
+            }
+
+            const header = document.querySelector('.app-header');
+            window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+            document.querySelectorAll('.reveal').forEach(el => new IntersectionObserver(e => e[0].isIntersecting && e[0].target.classList.add('visible'), { threshold: 0.1 }).observe(el));
+
+            const cropTypeSelect = document.getElementById('crop-type');
+            const mandiPriceRef = document.getElementById('mandi-price-ref');
+            const livePriceEl = document.getElementById('live-price');
+            const mandiPrices = { "Wheat": 2450, "Rice": 3150, "Cotton": 7100, "Mustard": 5400, "Sugarcane": 350 };
+            cropTypeSelect.addEventListener('change', (e) => {
+                const selectedCrop = e.target.value;
+                if (selectedCrop && mandiPrices[selectedCrop]) {
+                    livePriceEl.textContent = `₹${mandiPrices[selectedCrop]}/qt`;
+                    mandiPriceRef.style.display = 'block';
+                } else {
+                    mandiPriceRef.style.display = 'none';
+                }
+            });
+
+            const sellForm = document.getElementById('sell-form');
+            sellForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const existingListings = JSON.parse(localStorage.getItem('userCropListings')) || [];
+                const newListing = {
+                    name: document.getElementById('crop-type').value,
+                    price: parseInt(document.getElementById('price').value),
+                    grade: "A", type: "Fresh Harvest",
+                    available: parseInt(document.getElementById('quantity').value),
+                    location: document.getElementById('location').value,
+                    img: "https://images.unsplash.com/photo-1599548380381-22906b325b34?q=80&w=600&auto=format&fit=crop"
+                };
+                existingListings.push(newListing);
+                localStorage.setItem('userCropListings', JSON.stringify(existingListings));
+                showToast(`Your ${newListing.name} listing is live!`);
+                sellForm.reset();
+                mandiPriceRef.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

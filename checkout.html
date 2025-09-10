@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMandi - Checkout</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+        .order-summary-card {
+            position: sticky;
+            top: 100px;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+        .summary-item .item-name {
+            color: #555;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        .summary-total {
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-top: 1px solid #ddd;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48C4.7 9.1 5.97 7.74 7.56 6.9c1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85s1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51-2.76 4.48-4.79.31-.65.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54s-1.11.82-.9 1.48c-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25-.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85s-1.25 1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                <h1>KrishiMandi</h1>
+            </a>
+            <nav class="main-nav">
+                <a href="cart.html">Back to Cart</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="app-section">
+            <div class="container">
+                <div class="section-header"><h3>Checkout</h3></div>
+                <div class="checkout-layout">
+                    <div class="card form-card">
+                        <form id="checkout-form">
+                            <h4>Shipping Details</h4>
+                            <div class="form-group">
+                                <label for="name">Full Name *</label>
+                                <input type="text" id="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Full Address (with Pincode) *</label>
+                                <input type="text" id="address" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Mobile Number *</label>
+                                <input type="tel" id="phone" required placeholder="For delivery updates">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">Place Order on WhatsApp</button>
+                        </form>
+                    </div>
+                    <div class="card order-summary-card">
+                        <h4>Order Summary</h4>
+                        <div id="summary-items">
+                            </div>
+                        <div id="summary-totals">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div id="toast-container"></div>
+    <footer class="app-footer">
+        <div class="container"><p>&copy; 2025 KrishiMandi. All rights reserved.</p></div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const summaryItemsContainer = document.getElementById('summary-items');
+            const summaryTotalsContainer = document.getElementById('summary-totals');
+            const checkoutForm = document.getElementById('checkout-form');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            function showToast(message, type = 'error') {
+                const toastContainer = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3000);
+            }
+
+            function renderSummary() {
+                if (cart.length === 0) {
+                    showToast("Your cart is empty. Redirecting...");
+                    setTimeout(() => { window.location.href = 'library.html'; }, 2000);
+                    return;
+                }
+
+                summaryItemsContainer.innerHTML = cart.map(item => `
+                    <div class="summary-item">
+                        <span class="item-name">${item.name} (x${item.quantity})</span>
+                        <strong>₹${(item.price * item.quantity).toLocaleString('en-IN')}</strong>
+                    </div>
+                `).join('');
+
+                const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+                const tax = subtotal * 0.05;
+                const total = subtotal + tax;
+
+                summaryTotalsContainer.innerHTML = `
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>₹${subtotal.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Taxes (5%)</span>
+                        <span>₹${tax.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>Total</span>
+                        <span>₹${total.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                    </div>
+                `;
+            }
+
+            checkoutForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const name = document.getElementById('name').value;
+                const address = document.getElementById('address').value;
+                const phone = document.getElementById('phone').value;
+                
+                // --- Construct the WhatsApp Message ---
+                const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+                const tax = subtotal * 0.05;
+                const total = subtotal + tax;
+
+                let message = "🎉 *New Order from KrishiMandi!*\n\n";
+                message += "*Customer Details:*\n";
+                message += `Name: ${name}\n`;
+                message += `Address: ${address}\n`;
+                message += `Phone: ${phone}\n\n`;
+
+                message += "*Order Items:*\n";
+                cart.forEach(item => {
+                    message += `- ${item.name} (Qty: ${item.quantity}) - ₹${(item.price * item.quantity).toLocaleString('en-IN')}\n`;
+                });
+
+                message += "\n*Order Summary:*\n";
+                message += `Subtotal: ₹${subtotal.toLocaleString('en-IN')}\n`;
+                message += `Tax (5%): ₹${tax.toFixed(2)}\n`;
+                message += `*Total Amount: ₹${total.toFixed(2)}*\n\n`;
+                
+                // --- Open WhatsApp ---
+                const yourNumber = "919019989269"; // Your number with India's country code
+                const encodedMessage = encodeURIComponent(message);
+                const whatsappURL = `https://wa.me/${yourNumber}?text=${encodedMessage}`;
+                
+                // Clear the cart after preparing the message
+                localStorage.removeItem('cart');
+
+                // Redirect to WhatsApp
+                window.location.href = whatsappURL;
+            });
+
+            // Initial render of the summary
+            renderSummary();
+        });
+    </script>
+</body>
+</html>

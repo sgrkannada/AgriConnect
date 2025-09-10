@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMandi - Buy Crops</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .page-controls { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+        .filters { display: flex; gap: 1rem; }
+        .filters select { padding: 0.5rem; border-radius: 8px; border: 1px solid #ddd; }
+        .card-actions { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
+        .quantity-selector input { width: 60px; text-align: center; padding: 0.5rem; border: 1px solid #ddd; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48.79-1.67 2.06-3.03 3.65-3.87 1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85.78-.28 1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51 2.76 4.48-4.79.31-.65.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54-.66-.21-1.11.82-.9 1.48-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85-.78.28-1.25-1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                <h1>KrishiMandi</h1>
+            </a>
+            <nav class="main-nav">
+                <a href="prices.html">Prices</a>
+                <a href="buy.html" class="active">Buy</a>
+                <a href="sell.html">Sell</a>
+                <a href="diagnose.html">Diagnose</a>
+                <a href="shop.html">Shop</a>
+                <a href="insurance.html">Insurance</a>
+                <a href="tasks.html">Tasks</a>
+                <a href="reels.html">Reels</a>
+                <a href="cart.html" style="margin-left: 1rem; font-weight: 600;">Cart</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="buy-crops" class="app-section">
+            <div class="container reveal">
+                 <div class="section-header">
+                    <h3>Available Crops</h3>
+                    <p>Browse listings directly from farmers across the country.</p>
+                </div>
+                <div class="page-controls">
+                    <div class="filters">
+                        <select id="crop-filter">
+                            <option value="all">All Crop Types</option>
+                            <option value="Wheat">Wheat</option>
+                            <option value="Rice">Rice</option>
+                            <option value="Cotton">Cotton</option>
+                            <option value="Mustard">Mustard</option>
+                        </select>
+                        <select id="sort-filter">
+                            <option value="default">Sort By</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+               
+                <div id="buy-crops-grid" class="card-grid">
+                    </div>
+            </div>
+        </section>
+    </main>
+    
+    <div id="toast-container"></div>
+    <footer class="app-footer">
+        <div class="container"><p>&copy; 2025 KrishiMandi. All rights reserved.</p></div>
+    </footer>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3000);
+            }
+
+            const header = document.querySelector('.app-header');
+            window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+            document.querySelectorAll('.reveal').forEach(el => new IntersectionObserver(e => e[0].isIntersecting && e[0].target.classList.add('visible'), { threshold: 0.1 }).observe(el));
+
+            const buyCropsGrid = document.getElementById('buy-crops-grid');
+            const defaultCropListings = [
+                { id: "crop-1", name: "Premium Wheat", price: 2500, grade: "A+", type: "Organic", available: 50, location: "Ludhiana, Punjab", img: "https://images.unsplash.com/photo-1508242328425-3b74914440a3?q=80&w=600&auto=format&fit=crop" },
+                { id: "crop-2", name: "Basmati Rice", price: 3200, grade: "A", type: "Organic", available: 25, location: "Amritsar, Punjab", img: "https://images.unsplash.com/photo-1586201375822-522197170443?q=80&w=600&auto=format&fit=crop" },
+                { id: "crop-3", name: "Fresh Cotton", price: 7150, grade: "A+", type: "Long Staple", available: 100, location: "Nagpur, Maharashtra", img: "https://images.unsplash.com/photo-1621996346565-e326b20f546b?q=80&w=600&auto=format&fit=crop" }
+            ];
+            const userCropListings = JSON.parse(localStorage.getItem('userCropListings')) || [];
+            let allCrops = [...defaultCropListings, ...userCropListings];
+
+            function renderCrops() {
+                const cropFilter = document.getElementById('crop-filter').value;
+                const sortFilter = document.getElementById('sort-filter').value;
+                let filteredCrops = allCrops;
+                if (cropFilter !== 'all') {
+                    filteredCrops = allCrops.filter(c => c.name.includes(cropFilter));
+                }
+                if (sortFilter === 'price-asc') filteredCrops.sort((a, b) => a.price - b.price);
+                if (sortFilter === 'price-desc') filteredCrops.sort((a, b) => b.price - a.price);
+                
+                buyCropsGrid.innerHTML = filteredCrops.map((listing, index) => `
+                    <div class="card crop-listing-card">
+                        <img src="${listing.img}" alt="${listing.name}">
+                        <div class="listing-details">
+                            <div class="listing-header">
+                                <h5>${listing.name}</h5>
+                                <span class="price">₹${listing.price.toLocaleString('en-IN')}/qt</span>
+                            </div>
+                            <p class="listing-meta">Grade ${listing.grade} • ${listing.type}</p>
+                            <p class="listing-info"><strong>Location:</strong> ${listing.location}</p>
+                            <div class="card-actions">
+                                <div class="quantity-selector">
+                                    <input type="number" id="qty-${listing.id}" value="1" min="1" max="${listing.available}" aria-label="Quantity">
+                                </div>
+                                <button class="btn btn-primary add-to-cart-btn" data-id="${listing.id}" data-name="${listing.name}" data-price="${listing.price}" data-img="${listing.img}">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>`).join('');
+            }
+
+            document.getElementById('crop-filter').addEventListener('change', renderCrops);
+            document.getElementById('sort-filter').addEventListener('change', renderCrops);
+
+            buyCropsGrid.addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    const button = e.target;
+                    const id = button.dataset.id;
+                    const quantity = parseInt(document.getElementById(`qty-${id}`).value);
+                    if (isNaN(quantity) || quantity < 1) {
+                        showToast('Please enter a valid quantity.', 'error');
+                        return;
+                    }
+                    const item = {
+                        id: id,
+                        name: button.dataset.name,
+                        price: parseFloat(button.dataset.price),
+                        img: button.dataset.img,
+                    };
+                    
+                    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    const existingItem = cart.find(cartItem => cartItem.id === item.id);
+                    if (existingItem) {
+                        existingItem.quantity += quantity;
+                    } else {
+                        item.quantity = quantity;
+                        cart.push(item);
+                    }
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    showToast(`${quantity} Quintal(s) of ${item.name} added to cart!`);
+                }
+            });
+
+            renderCrops();
+        });
+    </script>
+</body>
+</html>

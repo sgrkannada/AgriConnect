@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMandi - Shopping Cart</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .cart-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: flex-start; }
+        .cart-item { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #eee; }
+        .cart-item img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; }
+        .cart-item-details { flex-grow: 1; }
+        .cart-item-details h5 { margin: 0 0 0.5rem; }
+        .cart-item-actions { display: flex; align-items: center; gap: 1rem; }
+        .cart-item-actions input { width: 60px; text-align: center; }
+        .cart-item-remove { background: none; border: none; color: #e74c3c; cursor: pointer; font-weight: 600; }
+        .cart-summary { background: #f9f9f9; padding: 1.5rem; border-radius: 8px; position: sticky; top: 100px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+        .summary-total { font-weight: 700; font-size: 1.2rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+        .empty-cart { text-align: center; padding: 4rem 0; }
+        @media (max-width: 768px) { .cart-layout { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48.79-1.67 2.06-3.03 3.65-3.87 1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85.78-.28 1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51 2.76 4.48-4.79.31-.65-.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54-.66-.21-1.11.82-.9 1.48-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85-.78.28-1.25-1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                <h1>KrishiMandi</h1>
+            </a>
+            <nav class="main-nav">
+                 <a href="buy.html">Continue Shopping</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="app-section">
+            <div id="cart-container" class="container">
+                </div>
+        </section>
+    </main>
+    
+    <div id="toast-container"></div>
+    <footer class="app-footer">
+        <div class="container"><p>&copy; 2025 KrishiMandi. All rights reserved.</p></div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3000);
+            }
+
+            const cartContainer = document.getElementById('cart-container');
+            
+            function renderCart() {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                
+                if (cart.length === 0) {
+                    cartContainer.innerHTML = `
+                        <div class="empty-cart">
+                            <h3>Your Cart is Empty</h3>
+                            <p>Looks like you haven't added anything yet.</p>
+                            <a href="buy.html" class="btn btn-primary" style="margin-top: 1rem;">Start Shopping</a>
+                        </div>`;
+                    return;
+                }
+
+                const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+                const tax = subtotal * 0.05; // 5% tax
+                const total = subtotal + tax;
+
+                cartContainer.innerHTML = `
+                    <div class="section-header"><h3>Shopping Cart</h3></div>
+                    <div class="cart-layout">
+                        <div class="card" style="padding: 1.5rem;">
+                            <div id="cart-items-list">
+                                ${cart.map((item) => `
+                                <div class="cart-item">
+                                    <img src="${item.img}" alt="${item.name}">
+                                    <div class="cart-item-details">
+                                        <h5>${item.name}</h5>
+                                        <p>₹${item.price.toLocaleString('en-IN')} each</p>
+                                    </div>
+                                    <div class="cart-item-actions">
+                                        <input class="cart-item-quantity" type="number" value="${item.quantity}" min="1" data-id="${item.id}">
+                                        <button class="cart-item-remove" data-id="${item.id}">Remove</button>
+                                    </div>
+                                </div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="cart-summary card">
+                            <h4>Order Summary</h4>
+                            <div class="summary-row">
+                                <span>Subtotal</span>
+                                <span>₹${subtotal.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Taxes (5%)</span>
+                                <span>₹${tax.toFixed(2).toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="summary-row summary-total">
+                                <span>Total</span>
+                                <span>₹${total.toFixed(2).toLocaleString('en-IN')}</span>
+                            </div>
+                            <a href="checkout.html" class="btn btn-primary btn-full" style="margin-top: 1rem;">Proceed to Checkout</a>
+                        </div>
+                    </div>`;
+            }
+
+            cartContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('cart-item-remove')) {
+                    const itemId = e.target.dataset.id;
+                    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    cart = cart.filter(item => item.id !== itemId);
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    showToast('Item removed from cart.', 'error');
+                    renderCart();
+                }
+            });
+
+            cartContainer.addEventListener('change', (e) => {
+                 if (e.target.classList.contains('cart-item-quantity')) {
+                    const itemId = e.target.dataset.id;
+                    const newQuantity = parseInt(e.target.value);
+                    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    const itemToUpdate = cart.find(item => item.id === itemId);
+                    if (itemToUpdate && newQuantity > 0) {
+                        itemToUpdate.quantity = newQuantity;
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        renderCart();
+                    }
+                 }
+            });
+
+            renderCart();
+        });
+    </script>
+</body>
+</html>

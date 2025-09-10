@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMandi - AI Disease Diagnosis</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+    { "imports": { "@google/generative-ai": "https://esm.sh/@google/generative-ai" } }
+    </script>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.58 9.55c-1.84-3.53-5.02-6.11-8.8-6.53-2.2-.25-4.44.2-6.39 1.28-1.95 1.08-3.51 2.76-4.48 4.79-.31.65-.21 1.41.24 1.95.45.54 1.2.75 1.86.54.66-.21 1.11-.82.9-1.48.79-1.67 2.06-3.03 3.65-3.87 1.59-.84 3.42-1.16 5.25-.9 3.03.43 5.61 2.5 6.96 5.11.39.75 1.22 1.13 2 .85.78-.28 1.25-1.08.97-1.85zM2.42 14.45c1.84 3.53 5.02 6.11 8.8 6.53 2.2.25 4.44-.2 6.39-1.28 1.95-1.08 3.51 2.76 4.48-4.79.31-.65.21-1.41-.24-1.95-.45-.54-1.2-.75-1.86-.54-.66-.21-1.11.82-.9 1.48-.79 1.67-2.06 3.03-3.65 3.87-1.59-.84-3.42-1.16-5.25.9-3.03-.43-5.61-2.5-6.96-5.11-.39-.75-1.22-1.13-2-.85-.78.28-1.25-1.08-.97 1.85z" fill="#2ECC71"></path></svg>
+                <h1>KrishiMandi</h1>
+            </a>
+             <nav class="main-nav">
+                <a href="prices.html">Prices</a>
+                <a href="buy.html">Buy</a>
+                <a href="sell.html">Sell</a>
+                <a href="diagnose.html" class="active">Diagnose</a>
+                <a href="shop.html">Shop</a>
+                <a href="insurance.html">Insurance</a>
+                <a href="tasks.html">Tasks</a>
+                <a href="reels.html">Reels</a>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section id="disease-detection" class="app-section">
+            <div class="container reveal">
+                <div class="section-header">
+                    <h3>AI Crop Disease Diagnosis</h3>
+                    <p>Upload a crop image for instant disease identification and treatment advice.</p>
+                </div>
+                <div class="card">
+                    <h4>1. Upload Image</h4>
+                    <div class="image-picker-buttons" style="display: flex; justify-content: center; gap: 1rem;">
+                        <input type="file" id="upload-photo-input" accept="image/*" style="display: none;">
+                        <label for="upload-photo-input" class="btn btn-primary">Upload Photo</label>
+                    </div>
+                </div>
+                <div class="card analysis-results-card" style="margin-top:24px;">
+                    <h4>2. Analysis Results</h4>
+                    <div id="analysis-results">
+                        <div class="placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            <p>Upload an image to see the diagnosis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div id="toast-container"></div>
+    <footer class="app-footer">
+        <div class="container">
+            <p>&copy; 2025 KrishiMandi. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toast-container');
+                 if (!toastContainer) {
+                    const container = document.createElement('div');
+                    container.id = 'toast-container';
+                    document.body.appendChild(container);
+                }
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.getElementById('toast-container').appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 5000);
+            }
+
+            const header = document.querySelector('.app-header');
+            window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            
+            const uploadInput = document.getElementById('upload-photo-input');
+            const analysisResultsContainer = document.getElementById('analysis-results');
+            const API_KEY = "YOUR_API_KEY_HERE";
+
+            async function runAiAnalysis(file) {
+                if (!API_KEY || API_KEY === "YOUR_API_KEY_HERE") {
+                    analysisResultsContainer.innerHTML = `<p style="text-align:center; color: var(--negative-color);">Please add your Google AI API key in the script to enable this feature.</p>`;
+                    showToast('AI feature not configured.', 'error');
+                    return;
+                }
+                
+                const genAI = new GoogleGenerativeAI(API_KEY);
+                analysisResultsContainer.innerHTML = '<div class="loader"></div><p style="text-align:center;">Analyzing image...</p>';
+
+                try {
+                    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                    const prompt = `Analyze this image of a crop leaf. Identify the crop and any disease. If a disease is present, provide a brief description and suggest 2-3 practical treatment steps (both organic and chemical if possible). If healthy, state that clearly. Format the output with headings (e.g., **Crop:**, **Diagnosis:**, **Treatment Suggestions:**).`;
+                    
+                    const imagePart = await fileToGenerativePart(file);
+                    const result = await model.generateContent([prompt, imagePart]);
+                    const text = result.response.text();
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                         analysisResultsContainer.innerHTML = `
+                            <div class="analysis-content">
+                                <img src="${event.target.result}" alt="Uploaded crop analysis" class="analysis-image">
+                                <div class="analysis-details" id="ai-response-content"></div>
+                            </div>`;
+                        // Sanitize and render markdown-like text
+                        document.getElementById('ai-response-content').innerHTML = text
+                            .replace(/\*\*(.*?)\*\*/g, '<h5>$1</h5>')
+                            .replace(/\* (.*?)(?=\n\*|\n\n|$)/g, '<li>$1</li>')
+                            .replace(/(\r\n|\n|\r)/gm, "<br>");
+                    };
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    console.error("AI Analysis Error:", error);
+                    analysisResultsContainer.innerHTML = '<p style="text-align:center; color: var(--negative-color);">Error analyzing image. Please try again.</p>';
+                    showToast('AI analysis failed.', 'error');
+                }
+            }
+
+            function fileToGenerativePart(file) {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve({ inlineData: { data: e.target.result.split(',')[1], mimeType: file.type } });
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            uploadInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) runAiAnalysis(file);
+            });
+        });
+    </script>
+</body>
+</html>
